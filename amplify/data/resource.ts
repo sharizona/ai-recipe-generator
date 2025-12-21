@@ -12,6 +12,12 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.guest()]),
+  askBedrock: a
+    .query()
+    .arguments({ ingredients: a.string().array() })
+    .returns(a.customType({ body: a.string() }))
+    .authorization((allow) => [allow.guest()])
+    .handler(a.handler.function('askBedrockFunction')),
 });
 
 export type Schema = ClientSchema<typeof schema>;

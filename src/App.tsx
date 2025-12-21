@@ -24,7 +24,8 @@ amplifyClient.queries.askBedrock({
  if (!errors) {
  setResult(data?.body || "No data returned");
  } else {
- console.log(errors);
+ console.error("Full error details:", JSON.stringify(errors, null, 2));
+ alert("Error occurred. Check browser console for details.");
  }
  } catch (e) {
  alert(`An error occurred: ${e}`);

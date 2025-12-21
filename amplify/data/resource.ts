@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { askBedrockFunction } from '../functions/askBedrockFunction/resource';
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -17,7 +18,7 @@ const schema = a.schema({
     .arguments({ ingredients: a.string().array() })
     .returns(a.customType({ body: a.string() }))
     .authorization((allow) => [allow.authenticated()])
-    .handler(a.handler.function('askBedrockFunction')),
+    .handler(a.handler.function(askBedrockFunction)),
 });
 
 export type Schema = ClientSchema<typeof schema>;

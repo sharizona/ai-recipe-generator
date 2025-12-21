@@ -7,12 +7,11 @@ import { generateClient } from "aws-amplify/data";
 import outputs from "../amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 Amplify.configure(outputs);
-const amplifyClient = generateClient<Schema>({
- authMode: "userPool",
-});
+
 function App() {
  const [result, setResult] = useState<string>("");
  const [loading, setLoading] = useState(false);
+ const amplifyClient = generateClient<Schema>();
  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
  event.preventDefault();
  setLoading(true);

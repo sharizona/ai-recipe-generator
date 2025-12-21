@@ -16,7 +16,7 @@ const schema = a.schema({
     .query()
     .arguments({ ingredients: a.string().array() })
     .returns(a.customType({ body: a.string() }))
-    .authorization((allow) => [allow.guest()])
+    .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function('askBedrockFunction')),
 });
 
@@ -25,7 +25,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: 'userPool',
   },
 });
 

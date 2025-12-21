@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import {type FormEvent, useState } from "react";
 import { Loader, Placeholder } from "@aws-amplify/ui-react";
 import "./App.css";
 import { Amplify } from "aws-amplify";
@@ -8,7 +8,7 @@ import outputs from "../amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 Amplify.configure(outputs);
 const amplifyClient = generateClient<Schema>({
- authMode: "userPool",
+ authMode: "identityPool",
 });
 function App() {
  const [result, setResult] = useState<string>("");

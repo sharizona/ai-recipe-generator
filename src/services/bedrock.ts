@@ -1,8 +1,7 @@
 export async function generateRecipe(ingredients: string) {
-  const response = await fetch('https://bedrock-runtime.us-west-2.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke', {
+  const response = await fetch("/api/askBedrock", {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${import.meta.env.VITE_AWS_BEARER_TOKEN_BEDROCK}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

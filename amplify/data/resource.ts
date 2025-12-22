@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { askBedrockFunction } from '../functions/askBedrockFunction/resource';
+import { stripeCheckoutFunction } from '../functions/stripeCheckoutFunction/resource';
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -13,12 +14,42 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.guest()]),
+  UserCredits: a
+    .model({
+      userId: a.string().required(),
+      credits: a.integer().default(0),
+      email: a.string(),
+    })
+    .authorization((allow) => [
+      allow.owner().to(['read', 'update']),
+      allow.authenticated().to(['read'])
+    ]),
+  Transaction: a
+    .model({
+      userId: a.string().required(),
+      amount: a.float().required(),
+      credits: a.integer().required(),
+      stripeSessionId: a.string(),
+      status: a.string().required(),
+    })
+    .authorization((allow) => [
+      allow.owner().to(['read']),
+    ]),
   askBedrock: a
     .query()
     .arguments({ ingredients: a.string().array() })
     .returns(a.customType({ body: a.string() }))
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(askBedrockFunction)),
+  createCheckoutSession: a
+    .query()
+    .arguments({ credits: a.integer().required() })
+    .returns(a.customType({
+      sessionId: a.string(),
+      url: a.string()
+    }))
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(stripeCheckoutFunction)),
 });
 
 export type Schema = ClientSchema<typeof schema>;

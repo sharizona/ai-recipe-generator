@@ -2,6 +2,7 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { askBedrockFunction } from './functions/askBedrockFunction/resource';
+import { stripeCheckoutFunction } from './functions/stripeCheckoutFunction/resource';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 /**
@@ -10,7 +11,8 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 const backend = defineBackend({
   auth,
   data,
-  askBedrockFunction
+  askBedrockFunction,
+  stripeCheckoutFunction
 });
 
 // Grant Bedrock permissions to the Lambda function

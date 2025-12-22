@@ -6,6 +6,8 @@ import { PricingPage } from "./components/PricingPage";
 import { SuccessPage } from "./components/SuccessPage";
 import "./index.css";
 import { Authenticator } from "@aws-amplify/ui-react";
+import ZoomBooking  from './components/ZoomBooking';
+
 
 // Import test utilities
 import {
@@ -31,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/success" element={<SuccessPage />} />
+          <Route path="/book-session" element={<ZoomBooking />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

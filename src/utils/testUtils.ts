@@ -3,14 +3,12 @@ import { generateClient } from 'aws-amplify/data';
 import { getCurrentUser } from 'aws-amplify/auth';
 import type { Schema } from '../../amplify/data/resource';
 
-// Generate a typed client
 const client = generateClient<Schema>();
 
 export async function updateCreditsForTesting(credits: number = 10) {
     try {
         const user = await getCurrentUser();
 
-        // List uses 'owner' field automatically added by Amplify
         const userCreditsList = await client.models.UserCredits.list({
             filter: { userId: { eq: user.userId } }
         });
@@ -21,9 +19,13 @@ export async function updateCreditsForTesting(credits: number = 10) {
                 credits: credits
             });
             console.log(`Credits updated to ${credits}!`, result);
+
+            // Trigger a custom event that the App component can listen to
+            window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: { credits } }));
+
             return result;
         } else {
-            console.log('No credit records found for user');
+            console.error('No credit records found.');
             return null;
         }
     } catch (error) {
@@ -55,7 +57,6 @@ export async function getCurrentUserCredits() {
     }
 }
 
-// Bonus: Create a new UserCredits record if one doesn't exist
 export async function createUserCredits(initialCredits: number = 5) {
     try {
         const user = await getCurrentUser();
@@ -67,6 +68,10 @@ export async function createUserCredits(initialCredits: number = 5) {
         });
 
         console.log('UserCredits record created!', result);
+
+        // Trigger UI update
+        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: { credits: initialCredits } }));
+
         return result;
     } catch (error) {
         console.error('Error creating credits:', error);

@@ -21,6 +21,18 @@ function App() {
   // Fetch user credits on component mount
   useEffect(() => {
     fetchUserCredits();
+
+    // Listen for credit updates from test utilities
+    const handleCreditsUpdate = (event: CustomEvent) => {
+      setCredits(event.detail.credits);
+      console.log('Credits updated in UI:', event.detail.credits);
+    };
+
+    window.addEventListener('creditsUpdated', handleCreditsUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('creditsUpdated', handleCreditsUpdate as EventListener);
+    };
   }, []);
 
   const fetchUserCredits = async () => {
@@ -48,6 +60,7 @@ function App() {
       setLoadingCredits(false);
     }
   };
+
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -92,67 +105,82 @@ function App() {
       setLoading(false);
     }
   };
+
   if (loadingCredits) {
     return (
-      <div className="app-container">
-        <Loader size="large" />
-        <p>Loading your account...</p>
-      </div>
+        <div className="app-container">
+          <Loader size="large" />
+          <p>Loading your account...</p>
+        </div>
     );
   }
 
   return (
-    <div className="app-container">
-      <div className="credits-bar">
-        <div className="credits-info">
-          <span className="credits-label">Credits:</span>
-          <span className="credits-amount">{credits}</span>
-        </div>
-        <button className="buy-credits-button" onClick={() => navigate("/pricing")}>
-          Buy Credits
-        </button>
-      </div>
+      <div className="app-container">
+        <div className="credits-bar">
+          <div className="credits-info">
+            <span className="credits-label">Credits:</span>
+            <span className="credits-amount">{credits}</span>
+          </div>
+          {/* ADD THE BUTTON GROUP HERE */}
+          <div className="button-group">
+            <button
+                className="book-zoom-button"
+                onClick={() => navigate("/book-session")}
+            >
+              📹 Book Zoom Session
+            </button>
+            <button className="buy-credits-button" onClick={() => navigate("/pricing")}>
+              Buy Credits
+            </button>
+          </div>
+          {/* END OF BUTTON GROUP */}
 
-      <div className="header-container">
-        <h1 className="main-header">
-          Meet Your Personal
-          <br />
-          <span className="highlight">Recipe AI</span>
-        </h1>
-        <p className="description">
-          Simply type a few ingredients using the format ingredient1,
-          ingredient2, etc., and Recipe AI will generate an all-new recipe on
-          demand...
-        </p>
+        </div>
+
+        <div className="header-container">
+          <h1 className="main-header">
+            Meet Your Personal
+            <br />
+            <span className="highlight">Recipe AI</span>
+          </h1>
+          <p className="description">
+            Simply type a few ingredients using the format ingredient1,
+            ingredient2, etc., and Recipe AI will generate an all-new recipe on
+            demand...
+          </p>
+        </div>
+
+        <form onSubmit={onSubmit} className="form-container">
+          <div className="search-container">
+            <input
+                type="text"
+                className="wide-input"
+                id="ingredients"
+                name="ingredients"
+                placeholder="Ingredient1, Ingredient2, Ingredient3,...etc"
+            />
+            <button type="submit" className="search-button">
+              Generate
+            </button>
+          </div>
+        </form>
+
+        <div className="result-container">
+          {loading ? (
+              <div className="loader-container">
+                <p>Loading...</p>
+                <Loader size="large" />
+                <Placeholder size="large" />
+                <Placeholder size="large" />
+                <Placeholder size="large" />
+              </div>
+          ) : (
+              result && <p className="result">{result}</p>
+          )}
+        </div>
       </div>
- <form onSubmit={onSubmit} className="form-container">
- <div className="search-container">
- <input
- type="text"
- className="wide-input"
- id="ingredients"
- name="ingredients"
- placeholder="Ingredient1, Ingredient2, Ingredient3,...etc"
- />
- <button type="submit" className="search-button">
- Generate
- </button>
- </div>
- </form>
- <div className="result-container">
- {loading ? (
- <div className="loader-container">
- <p>Loading...</p>
- <Loader size="large" />
- <Placeholder size="large" />
- <Placeholder size="large" />
- <Placeholder size="large" />
- </div>
- ) : (
- result && <p className="result">{result}</p>
- )}
- </div>
- </div>
- );
+  );
 }
+
 export default App;

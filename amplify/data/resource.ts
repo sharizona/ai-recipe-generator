@@ -21,7 +21,7 @@ const schema = a.schema({
       email: a.string(),
     })
     .authorization((allow) => [
-      allow.owner().to(['read', 'update']),
+      allow.owner().to(['read', 'update', 'create', 'delete']),
       allow.authenticated().to(['read'])
     ]),
   Transaction: a

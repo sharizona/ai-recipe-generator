@@ -104,7 +104,7 @@ async function sendConfirmationEmail(params: {
   to: string;
   from: string;
   meetingUrl: string;
-  startTime: string;
+  displayTime: string;
   timezone?: string | null;
 }) {
   const regionEnv = process.env.SES_REGION || '';
@@ -115,7 +115,7 @@ async function sendConfirmationEmail(params: {
   const bodyText = [
     'Your Zoom session is confirmed.',
     '',
-    `Time: ${params.startTime} (${timezone})`,
+    `Time: ${params.displayTime} (${timezone})`,
     `Join link: ${params.meetingUrl}`,
     '',
     'See you soon!',
@@ -156,11 +156,12 @@ export const handler: Schema['createZoomMeeting']['functionHandler'] = async (ev
       throw new Error('Missing SES from email');
     }
 
+    const displayTime = `${date} at ${time}`;
     await sendConfirmationEmail({
       to: email,
       from: fromEmail,
       meetingUrl: meeting.joinUrl,
-      startTime: meeting.startTime,
+      displayTime,
       timezone,
     });
 

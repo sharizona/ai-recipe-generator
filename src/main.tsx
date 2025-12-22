@@ -1,12 +1,17 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import App from "./App.jsx";
-import { PricingPage } from "./components/PricingPage";
-import { SuccessPage } from "./components/SuccessPage";
 import "./index.css";
+import "@aws-amplify/ui-react/styles.css";
 import { Authenticator } from "@aws-amplify/ui-react";
-import ZoomBooking  from './components/ZoomBooking';
+import { Amplify } from "aws-amplify";
+import outputs from "../amplify_outputs.json";
+
+const App = lazy(() => import("./App"));
+const PricingPage = lazy(() => import("./components/PricingPage").then((m) => ({ default: m.PricingPage })));
+const SuccessPage = lazy(() => import("./components/SuccessPage").then((m) => ({ default: m.SuccessPage })));
+const MyBookings = lazy(() => import("./components/MyBookings").then((m) => ({ default: m.MyBookings })));
+const LazyZoomBooking = lazy(() => import("./components/ZoomBooking"));
 
 
 // Import test utilities
@@ -29,14 +34,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Authenticator>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/success" element={<SuccessPage />} />
-          <Route path="/book-session" element={<ZoomBooking />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={<div className="app-container"><p>Loading...</p></div>}>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/success" element={<SuccessPage />} />
+            <Route path="/book-session" element={<LazyZoomBooking />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </Authenticator>
   </React.StrictMode>
 );
+Amplify.configure(outputs);

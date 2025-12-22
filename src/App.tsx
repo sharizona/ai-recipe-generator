@@ -2,13 +2,10 @@ import { type FormEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader, Placeholder } from "@aws-amplify/ui-react";
 import "./App.css";
-import { Amplify } from "aws-amplify";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { getCurrentUser } from "aws-amplify/auth";
-import outputs from "../amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
-Amplify.configure(outputs);
 
 function App() {
   const [result, setResult] = useState<string>("");
@@ -129,6 +126,9 @@ function App() {
                 onClick={() => navigate("/book-session")}
             >
               📹 Book Zoom Session
+            </button>
+            <button className="buy-credits-button" onClick={() => navigate("/my-bookings")}>
+              My Bookings
             </button>
             <button className="buy-credits-button" onClick={() => navigate("/pricing")}>
               Buy Credits

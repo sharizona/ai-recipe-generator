@@ -107,7 +107,8 @@ async function sendConfirmationEmail(params: {
   startTime: string;
   timezone?: string | null;
 }) {
-  const region = process.env.AWS_SES_REGION || 'us-west-2';
+  const regionEnv = process.env.SES_REGION || '';
+  const region = regionEnv.includes('resolved during runtime') || !regionEnv ? 'us-west-2' : regionEnv;
   const client = new SESv2Client({ region });
   const timezone = params.timezone || DEFAULT_TIMEZONE;
   const subject = 'Your Zoom session is confirmed';
@@ -150,7 +151,7 @@ export const handler: Schema['createZoomMeeting']['functionHandler'] = async (ev
       throw new Error('Zoom meeting creation returned incomplete data');
     }
 
-    const fromEmail = process.env.AWS_SES_FROM_EMAIL || '';
+    const fromEmail = process.env.FROM_EMAIL || '';
     if (!fromEmail) {
       throw new Error('Missing SES from email');
     }

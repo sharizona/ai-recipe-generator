@@ -7,8 +7,8 @@ export const zoomBookingFunction = defineFunction({
     ZOOM_ACCOUNT_ID: secret('ZOOM_ACCOUNT_ID'),
     ZOOM_CLIENT_ID: secret('ZOOM_CLIENT_ID'),
     ZOOM_CLIENT_SECRET: secret('ZOOM_CLIENT_SECRET'),
-    AWS_SES_REGION: secret('AWS_SES_REGION'),
-    AWS_SES_FROM_EMAIL: secret('AWS_SES_FROM_EMAIL'),
+    SES_REGION: secret('SES_REGION'),
+    FROM_EMAIL: secret('FROM_EMAIL'),
   },
   timeoutSeconds: 30,
 });

@@ -7,6 +7,22 @@ import { SuccessPage } from "./components/SuccessPage";
 import "./index.css";
 import { Authenticator } from "@aws-amplify/ui-react";
 
+// Import test utilities
+import {
+  updateCreditsForTesting,
+  getCurrentUserCredits,
+  createUserCredits
+} from './utils/testUtils'
+
+(window as any).updateCredits = updateCreditsForTesting;
+(window as any).getCredits = getCurrentUserCredits;
+(window as any).createCredits = createUserCredits;
+console.log('🧪 Test utilities loaded! Available commands:');
+console.log('  - updateCredits(amount) - Update credits to specified amount');
+console.log('  - getCredits() - Get current credit balance');
+console.log('  - createCredits(amount) - Create new UserCredits record');
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Authenticator>

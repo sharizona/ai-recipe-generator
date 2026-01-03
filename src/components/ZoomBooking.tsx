@@ -23,6 +23,7 @@ export default function ZoomBooking() {
     const [bookingStatus, setBookingStatus] = useState<'confirmed' | 'canceled' | 'rescheduled'>('confirmed');
     const [rescheduleDate, setRescheduleDate] = useState('');
     const [rescheduleTime, setRescheduleTime] = useState('');
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const availableTimes = [
         '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
@@ -45,7 +46,6 @@ export default function ZoomBooking() {
 
         setIsSubmitting(true);
         try {
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const { data, errors } = await client.queries.createZoomMeeting({
                 name: formData.name,
                 email: formData.email,
@@ -131,7 +131,6 @@ export default function ZoomBooking() {
         }
         setIsSubmitting(true);
         try {
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const { data, errors } = await client.queries.updateZoomMeeting({
                 meetingId,
                 date: rescheduleDate,
@@ -217,7 +216,7 @@ export default function ZoomBooking() {
                         Session Booked!
                     </h2>
                     <p style={{ color: '#15803d', marginBottom: '12px', fontSize: '16px' }}>
-                        Your Zoom session is scheduled for {formData.date} at {formData.time}
+                        Your Zoom session is scheduled for {formData.date} at {formData.time} ({timezone})
                     </p>
                     <p style={{ color: '#166534', marginBottom: '24px', fontSize: '14px' }}>
                         Status: {bookingStatus}
@@ -356,6 +355,9 @@ export default function ZoomBooking() {
                 </div>
 
                 <div style={{ padding: '32px' }}>
+                    <div style={{ marginBottom: '16px', color: '#64748b', fontSize: '14px' }}>
+                        Time zone: {timezone}
+                    </div>
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{
                             display: 'flex',
@@ -459,6 +461,9 @@ export default function ZoomBooking() {
                             }}>
                                 <Clock style={{ width: '16px', height: '16px' }} />
                                 Preferred Time
+                                <span style={{ fontSize: '12px', fontWeight: '500', color: '#64748b' }}>
+                                    ({timezone})
+                                </span>
                             </label>
                             <select
                                 name="time"

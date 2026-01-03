@@ -55,6 +55,7 @@ async function getZoomAccessToken() {
 }
 
 async function createZoomMeeting(params: {
+  accessToken: string;
   topic: string;
   date: string;
   time: string;
@@ -66,12 +67,11 @@ async function createZoomMeeting(params: {
   }
   const timezone = params.timezone || DEFAULT_TIMEZONE;
   const startTime = `${params.date}T${time24}:00`;
-  const accessToken = await getZoomAccessToken();
 
   const response = await fetch('https://api.zoom.us/v2/users/me/meetings', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${params.accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -100,11 +100,32 @@ async function createZoomMeeting(params: {
   };
 }
 
+async function getMeetingInvitation(params: { accessToken: string; meetingId: string }) {
+  const response = await fetch(
+    `https://api.zoom.us/v2/meetings/${encodeURIComponent(params.meetingId)}/invitation`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${params.accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Zoom invitation error: ${text}`);
+  }
+
+  const data = await response.json();
+  return data.invitation as string;
+}
+
 async function sendConfirmationEmail(params: {
   to: string;
   from: string;
   meetingUrl: string;
   displayTime: string;
+  invitation: string;
   timezone?: string | null;
 }) {
   const regionEnv = process.env.SES_REGION || '';
@@ -117,6 +138,9 @@ async function sendConfirmationEmail(params: {
     '',
     `Time: ${params.displayTime} (${timezone})`,
     `Join link: ${params.meetingUrl}`,
+    '',
+    'Meeting invitation:',
+    params.invitation,
     '',
     'See you soon!',
   ].join('\n');
@@ -146,10 +170,15 @@ export const handler: Schema['createZoomMeeting']['functionHandler'] = async (ev
   }
 
   try {
-    const meeting = await createZoomMeeting({ topic, date, time, timezone });
+    const accessToken = await getZoomAccessToken();
+    const meeting = await createZoomMeeting({ accessToken, topic, date, time, timezone });
     if (!meeting.joinUrl || !meeting.meetingId) {
       throw new Error('Zoom meeting creation returned incomplete data');
     }
+    const invitation = await getMeetingInvitation({
+      accessToken,
+      meetingId: meeting.meetingId,
+    });
 
     const fromEmail = process.env.FROM_EMAIL || '';
     if (!fromEmail) {
@@ -162,6 +191,7 @@ export const handler: Schema['createZoomMeeting']['functionHandler'] = async (ev
       from: fromEmail,
       meetingUrl: meeting.joinUrl,
       displayTime,
+      invitation,
       timezone,
     });
 
